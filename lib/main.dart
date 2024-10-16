@@ -3,6 +3,7 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/second.dart';
 
 void main() => runApp(const MyApp());
 
@@ -37,9 +38,16 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  void onPressedDecr() => setState(() {
+        _counter--;
+      });
+
+  void onPressedIncr() => setState(() {
+        _counter++;
+      });
+  void _resetCounter() {
     setState(() {
-      _counter++;
+      _counter = 0;
     });
   }
 
@@ -60,14 +68,29 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    onPressed: onPressedDecr, child: const Text("decrement")),
+                ElevatedButton(
+                    onPressed: onPressedIncr, child: const Text("increment")),
+              ],
+            ),
+            ElevatedButton(
+              child: const Text("Second screen"),
+              onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const SecondScreen()));
+              }, )
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _resetCounter,
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.restore),
       ),
     );
   }
 }
+
