@@ -12,7 +12,7 @@ class HttpPage extends StatefulWidget{
 }
 
 class _HttpPageState extends State<HttpPage>{
-  Future<Album>? futureAlbum;
+  Future<List<Album>>? futureAlbum;
 
   void _loadData() {
     setState(() {
@@ -27,15 +27,28 @@ class _HttpPageState extends State<HttpPage>{
         title: const Text('This is http screen'),
       ),
       body: Center(
-        child: FutureBuilder<Album>(
+        child: FutureBuilder<List<Album>>(
           future: futureAlbum,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return Text(snapshot.data!.title);
+              return ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final album = snapshot.data![index];
+
+                  return ListTile(
+                    title: Text(
+                      album.id.toString(),
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    subtitle: Text(album.title),
+                  );
+                },
+              );
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
             } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); // Pokaż loader podczas pobierania
+              return const CircularProgressIndicator(); 
             }
 
             // By default, show a loading spinner.
@@ -79,14 +92,13 @@ class Album {
     };
   }
 }
-Future<Album> fetchAlbum() async {
+Future<List<Album>> fetchAlbum() async {
   final response = await http
-      .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
+      .get(Uri.parse('https://jsonplaceholder.typicode.com/albums'));
 
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
-    return Album.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    Iterable it = jsonDecode(response.body);
+    return List<Album>.from(it.map((model) => Album.fromJson(model)));
   } else {
     // If the server did not return a 200 OK response,
     // then throw an exception.
