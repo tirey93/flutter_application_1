@@ -37,13 +37,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.blue,
-      ),
-      home: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Flutter Demo Home Page'),
         ),
@@ -56,8 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
