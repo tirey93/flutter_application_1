@@ -92,6 +92,8 @@ class Album {
     };
   }
 }
+
+
 Future<List<Album>> fetchAlbum() async {
   final response = await http
       .get(Uri.parse('https://jsonplaceholder.typicode.com/albums'));

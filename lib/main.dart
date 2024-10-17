@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/counter.dart';
+import 'package:flutter_application_1/hearthstone.dart';
 import 'package:flutter_application_1/http.dart';
 
 void main() => runApp(const MyApp());
@@ -46,11 +47,13 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CounterPage())), child: const Text('Counter')),
-              ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HttpPage())), child: const Text('Http'))
+              ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HttpPage())), child: const Text('Http')),
+              ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const HearthstonePage())), child: const Text('Hearthstone'))
             ],
           ),
         ),
       );
   }
 }
+
 
