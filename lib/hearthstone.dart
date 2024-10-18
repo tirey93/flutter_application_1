@@ -1,7 +1,6 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_application_1/Data/collection.dart';
 
 class HearthstonePage extends StatefulWidget {
   const HearthstonePage({super.key});
@@ -17,6 +16,12 @@ class _HearthstonePageState extends State<HearthstonePage> {
     setState(() {
       futureCollection = fetchCollection();
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    futureCollection = fetchCollection();
   }
 
   @override
@@ -51,61 +56,16 @@ class _HearthstonePageState extends State<HearthstonePage> {
               return const CircularProgressIndicator(); 
             }
 
-            // By default, show a loading spinner.
             return const Text('');
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _loadData,
-        tooltip: 'Increment',
-        child: const Icon(Icons.restore),
+        tooltip: 'Refresh',
+        child: const Icon(Icons.refresh),
       ),
     );
   }
 }
 
-Future<CollectionData> fetchCollection() async {
-  final response = await http
-      .get(Uri.parse(
-        'https://hsreplay.net/api/v1/collection/?region=2&account_lo=145926188&type=CONSTRUCTED'),
-        headers: {
-          "cookie": "sessionid=349urrtf4suoy4g5kfds8sqbpf8t4ndn", 
-        });
-
-  if (response.statusCode == 200) {
-    var json = jsonDecode(response.body) as Map<String, dynamic>;
-    return CollectionData.fromJson(json);
-  } else {
-    // If the server did not return a 200 OK response,
-    // then throw an exception.
-    throw Exception('Failed to load album');
-  }
-}
-
-class Entry{
-  final String cardId;
-  final List<int> values;
-
-  Entry({required this.cardId, required this.values});
-}
-
-class CollectionData {
-  final List<Entry> collection;
-
-  CollectionData({required this.collection});
-
-  factory CollectionData.fromJson(Map<String, dynamic> json) {
-    List<Entry> parsedCollection = [];
-
-    // Iterate over the "collection" map in the JSON
-    json['collection'].forEach((key, value) {
-      // Ensure the value is a list and cast its elements to integers
-      if (value is List) {
-        parsedCollection.add(Entry(cardId: key, values: value.cast<int>()));
-      }
-    });
-
-    return CollectionData(collection: parsedCollection);
-  }
-}
