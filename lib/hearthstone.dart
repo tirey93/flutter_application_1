@@ -47,13 +47,13 @@ class _HearthstonePageState extends State<HearthstonePage> {
                   var collection = snapshot.data!.cards;
                   var entry = collection[index];
 
-                  return ListTile(
-                    title: Text(
-                      entry.dbfId,
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    subtitle: Text('${entry.set} ${entry.rarity} n:${entry.normalCollectible.toString()} g: ${entry.goldenCollectible.toString()}'),
-                  );
+                  // return ListTile(
+                  //   title: Text(
+                  //     entry.dbfId,
+                  //     style: Theme.of(context).textTheme.headlineSmall,
+                  //   ),
+                  //   subtitle: Text('${entry.set} ${entry.rarity} n:${entry.normalCollectible.toString()} g: ${entry.goldenCollectible.toString()}'),
+                  // );
                 },
               );
             } else if (snapshot.hasError) {

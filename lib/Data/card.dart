@@ -14,15 +14,15 @@ Future<CardsData> fetchCards() async {
 }
 
 class CardsData {
-  final List<CardEntry> cards;
+  final Map<String, CardEntry> cards;
 
   CardsData({required this.cards});
 
   factory CardsData.fromJson(List<dynamic> json) {
-    List<CardEntry> parsedCards = [];
+    Map<String, CardEntry> parsedCards = {};
 
     for (var value in json) {
-      if (value['dbfId'] != null && value['set'] != null && value['rarity'] != null){
+      if (value['dbfId'] != null && value['set'] != null && value['rarity'] != null && value['rarity'] != 'FREE'){
         var normalCollectible = value['howToEarn'] == null;
         var goldenCollectible = value['howToEarnGolden'] == null;
         var entry = CardEntry(
@@ -32,7 +32,7 @@ class CardsData {
           normalCollectible: normalCollectible,
           goldenCollectible: goldenCollectible
         );
-        parsedCards.add(entry);
+        parsedCards[entry.dbfId] = entry;
       }
     }
 
