@@ -29,7 +29,7 @@ class CollectionData {
     json['collection'].forEach((key, value) {
       if (value is List) {
         var entry = CollectionEntry(cardId: key, values: value.cast<int>());
-        if(entry.values.sum > 0)
+        if(entry.hasValue)
           parsedCollection.add(CollectionEntry(cardId: key, values: value.cast<int>()));
       }
     });
@@ -40,7 +40,18 @@ class CollectionData {
 
 class CollectionEntry{
   final String cardId;
-  final List<int> values;
+  Map<String, int> qualities = {};
+  bool hasValue = false;
 
-  CollectionEntry({required this.cardId, required this.values});
+  CollectionEntry({required this.cardId, required List<int> values}){
+    hasValue = values.sum > 0;
+    if(values.length == 4){
+      qualities = {
+        "regular": values[0],
+        "golden": values[1],
+        "diamond": values[2],
+        "signature": values[3],
+      };
+    }
+  }
 }

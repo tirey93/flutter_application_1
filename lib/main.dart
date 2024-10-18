@@ -3,11 +3,13 @@
 // that can be found in the LICENSE file.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Data/summary.dart';
 import 'package:flutter_application_1/counter.dart';
 import 'package:flutter_application_1/hearthstone.dart';
 import 'package:flutter_application_1/http.dart';
 
-void main() => runApp(const MyApp());
+// void main() => runApp(const MyApp());
+void main() => fetchSummary();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
