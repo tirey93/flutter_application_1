@@ -1,5 +1,8 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Data/card.dart';
 import 'package:flutter_application_1/Data/collection.dart';
 
 class HearthstonePage extends StatefulWidget {
@@ -10,18 +13,18 @@ class HearthstonePage extends StatefulWidget {
 }
 
 class _HearthstonePageState extends State<HearthstonePage> {
-  Future<CollectionData>? futureCollection;
+  Future<CardsData>? futureCollection;
 
   void _loadData() {
     setState(() {
-      futureCollection = fetchCollection();
+      futureCollection = fetchCards();
     });
   }
 
   @override
   void initState() {
     super.initState();
-    futureCollection = fetchCollection();
+    futureCollection = fetchCards();
   }
 
   @override
@@ -31,29 +34,30 @@ class _HearthstonePageState extends State<HearthstonePage> {
         title: const Text('This is hearthstone screen'),
       ),
       body: Center(
-        child: FutureBuilder<CollectionData>(
+        child: FutureBuilder<CardsData>(
           future: futureCollection,
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator(); 
+            }
+            else if (snapshot.hasData) {
                return ListView.builder(
-                itemCount: snapshot.data!.collection.length,
+                itemCount: snapshot.data!.cards.length,
                 itemBuilder: (context, index) {
-                  var collection = snapshot.data!.collection;
+                  var collection = snapshot.data!.cards;
                   var entry = collection[index];
 
                   return ListTile(
                     title: Text(
-                      entry.cardId,
+                      entry.dbfId,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    subtitle: Text(entry.values.toString()),
+                    subtitle: Text('${entry.set} ${entry.rarity} n:${entry.normalCollectible.toString()} g: ${entry.goldenCollectible.toString()}'),
                   );
                 },
               );
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator(); 
             }
 
             return const Text('');

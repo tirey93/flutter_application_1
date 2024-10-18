@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-Future<CardsData> fetchCollection() async {
+Future<CardsData> fetchCards() async {
   final response = await http
       .get(Uri.parse('https://api.hearthstonejson.com/v1/latest/enUS/cards.json'));
 
@@ -26,7 +26,7 @@ class CardsData {
         var normalCollectible = value['howToEarn'] == null;
         var goldenCollectible = value['howToEarnGolden'] == null;
         var entry = CardEntry(
-          dbfId: value['dbfId'],
+          dbfId: value['dbfId'].toString(),
           set: value['set'],
           rarity: value['rarity'],
           normalCollectible: normalCollectible,
@@ -41,7 +41,7 @@ class CardsData {
 }
 
 class CardEntry{
-  final int dbfId;
+  final String dbfId;
   final String set;
   final String rarity;
   final bool normalCollectible;
