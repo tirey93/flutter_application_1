@@ -1,4 +1,7 @@
 
+import 'dart:convert';
+
+import 'package:collection/collection.dart';
 import 'package:flutter_application_1/Data/card.dart';
 import 'package:flutter_application_1/Data/collection.dart';
 
@@ -18,35 +21,66 @@ Future<Summary> fetchSummary() async {
     var card = cards.cards[entry.cardId];
     if (card != null){
       if (summary.expansions.containsKey(card.set)){
-        summary.increment(card.set, card.rarity, entry.qualities);
+        var s = entry.qualities.entries
+          .where((x) => x.key != "regular")
+          .map((x) => x.value)
+          .sum;
+        
+        if(card.set == "BATTLE_OF_THE_BANDS" && card.rarity == "COMMON" && s > 0){
+          int a = 5;
+
+        }
+        summary.incrementStandard(card, entry.qualities);
         int a = 5;
       }
       else{
-        //wild case
+        summary.incrementWild(card, entry.qualities);
+        int a = 5;
       }
       int a = 5;
     }
   }
   int b = 4;
+  subtractUncollectibleSignature(summary);
+  var res = jsonEncode(summary);
   return summary;
 }
 
 class Summary {
    final Map<String, Expansion> expansions = {
-    "ISLAND_VACATION": Expansion("ISLAND_VACATION", 2024, 7),
-    "WHIZBANGS_WORKSHOP": Expansion("WHIZBANGS_WORKSHOP", 2024, 3),
-    "WILD_WEST": Expansion("WILD_WEST", 2023, 11),
-    //...
-    "WILD": Expansion("WILD", null, null),
+    "ISLAND_VACATION": Expansion("Perils in Paradise", 2024, 7),
+    "WHIZBANGS_WORKSHOP": Expansion("Whizbang's Workshop", 2024, 3),
+
+    "WILD_WEST": Expansion("Showdown in the Badlands", 2023, 11),
+    "TITANS": Expansion("Titans", 2023, 8),
+    "BATTLE_OF_THE_BANDS": Expansion("Festival of Legends", 2023, 4),
+
+    "WILD": Expansion("Wild", null, null),
    };
 
-   void increment(String expansion, String rarity, Map<String, int> qualities)
-    => expansions[expansion]!.rarities[rarity]!.increment(qualities);
+   void incrementStandard(CardEntry card, Map<String, int> qualities)
+    => expansions[card.set]
+      !.rarities[card.rarity]
+      !.increment(card.normalCollectible, card.goldenCollectible, qualities);
+
+   void incrementWild(CardEntry card, Map<String, int> qualities)
+    => expansions['WILD']
+      !.rarities[card.rarity]
+      !.increment(card.normalCollectible, card.goldenCollectible, qualities);
+
+  Summary();
+  Summary.fromJson(Map<String, dynamic> json) {
+    expansions.clear(); // Clear existing data before populating from JSON
+    json.forEach((key, value) {
+      expansions[key] = Expansion.fromJson(value);
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    return expansions.map((key, value) => MapEntry(key, value.toJson()));
+  }
 }
 
-//get expansion of the card based on card.set
-//get Quality based on card.rarity
-//increment quality 
 class Expansion {
   final String name;
   int? releaseYear;
@@ -61,14 +95,30 @@ class Expansion {
     "LEGENDARY": Rarity("LEGENDARY", 20, 80),
   };
 
+  Expansion.fromJson(Map<String, dynamic> json)
+      : name = json['name'],
+        releaseYear = json['releaseYear'],
+        releaseMonth = json['releaseMonth'] {
+    rarities.clear(); // Ensure rarities are cleared before loading from JSON
+    (json['rarities'] as Map<String, dynamic>?)?.forEach((key, value) {
+      rarities[key] = Rarity.fromJson(value);
+    });
+  }
+
+  Map<String, dynamic> toJson() => {
+      'name': name,
+      'releaseYear': releaseYear,
+      'releaseMonth': releaseMonth,
+      'rarities': rarities.map((key, value) => MapEntry(key, value.toJson())),
+    };
 }
 
 class Rarity {
-    final String id;
-    final int normalCost;
-    final int premiumCost;
+  final String id;
+  final int normalCost;
+  final int premiumCost;
 
-    Map<String, int> qualities = {
+  Map<String, int> qualities = {
     "regular": 0,
     "golden": 0,
     "diamond": 0,
@@ -77,11 +127,57 @@ class Rarity {
 
   Rarity(this.id, this.normalCost, this.premiumCost);
 
-  void increment(Map<String, int> qualities){
-    for (var quality in qualities.entries) {
+  void increment(bool normalCollectible, bool goldenCollectible, Map<String, int> qualities){
+    if (normalCollectible)
+      this.qualities["regular"] = this.qualities["regular"]! + qualities["regular"]!;
+    for (var quality in qualities.entries.where((x) => x.key != "regular" && goldenCollectible)) {
       this.qualities[quality.key] = this.qualities[quality.key]! + quality.value;
     }
   }
   int getNormalCost() => qualities['regular']! * normalCost;
   int getPremiumCost() => (qualities['golden']! + qualities['signature']!) * premiumCost;
+
+  Rarity.fromJson(Map<String, dynamic> json)
+      : id = json['id'],
+        normalCost = json['normalCost'],
+        premiumCost = json['premiumCost'],
+        qualities = Map<String, int>.from(json['qualities']);
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'normalCost': normalCost,
+        'premiumCost': premiumCost,
+        'qualities': qualities,
+      };
+}
+
+void subtractUncollectibleSignature(Summary summary){
+  var toSubtracts = {
+    "ISLAND_VACATION.COMMON": 4,
+    "ISLAND_VACATION.RARE": 2,
+    "ISLAND_VACATION.EPIC": 2,
+
+    "WHIZBANGS_WORKSHOP.COMMON": 4,
+    "WHIZBANGS_WORKSHOP.RARE": 0,
+    "WHIZBANGS_WORKSHOP.EPIC": 4,
+
+    "WILD_WEST.COMMON": 4,
+    "WILD_WEST.RARE": 2,
+    "WILD_WEST.EPIC": 6,
+
+    "TITANS.COMMON": 4,
+    "TITANS.RARE": 4,
+    "TITANS.EPIC": 2,
+
+    "BATTLE_OF_THE_BANDS.COMMON": 4,
+  };
+
+  for (var subtraction in toSubtracts.entries) {
+    var expansion = subtraction.key.split('.')[0];
+    var rarity = subtraction.key.split('.')[1];
+    var toSubtract = subtraction.value;
+
+    var oldValue = summary.expansions[expansion]!.rarities[rarity]!.qualities['signature'];
+    summary.expansions[expansion]!.rarities[rarity]!.qualities['signature'] = oldValue! - toSubtract;
+  }
 }
