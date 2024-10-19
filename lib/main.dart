@@ -8,8 +8,9 @@ import 'package:flutter_application_1/counter.dart';
 import 'package:flutter_application_1/hearthstone.dart';
 import 'package:flutter_application_1/http.dart';
 
-// void main() => runApp(const MyApp());
-void main() => fetchSummary();
+//flutter build apk --release 
+void main() => runApp(const MyApp());
+// void main() => fetchSummary();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
