@@ -22,11 +22,12 @@ class CardsData {
     Map<String, CardEntry> parsedCards = {};
 
     for (var value in json) {
-      if (value['dbfId'] != null && value['set'] != null && value['rarity'] != null && value['rarity'] != 'FREE'){
+      if (value['dbfId'] != null && value['name'] != null && value['set'] != null && value['rarity'] != null && value['rarity'] != 'FREE'){
         var normalCollectible = value['howToEarn'] == null;
         var goldenCollectible = value['howToEarnGolden'] == null;
         var entry = CardEntry(
           dbfId: value['dbfId'].toString(),
+          name: value['name'],
           set: value['set'],
           rarity: value['rarity'],
           normalCollectible: normalCollectible,
@@ -42,10 +43,11 @@ class CardsData {
 
 class CardEntry{
   final String dbfId;
+  final String name;
   final String set;
   final String rarity;
   final bool normalCollectible;
   final bool goldenCollectible;
 
-  CardEntry({required this.dbfId, required this.set, required this.rarity, required this.normalCollectible, required this.goldenCollectible});
+  CardEntry({required this.dbfId, required this.name, required this.set, required this.rarity, required this.normalCollectible, required this.goldenCollectible});
 }

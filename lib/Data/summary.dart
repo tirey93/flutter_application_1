@@ -20,20 +20,24 @@ Future<Summary> fetchSummary() async {
   for (var entry in collection.collection) {
     var card = cards.cards[entry.cardId];
     if (card != null){
-      if (summary.expansions.containsKey(card.set)){
-        var s = entry.qualities.entries
-          .where((x) => x.key != "regular")
-          .map((x) => x.value)
-          .sum;
-        
-        if(card.set == "BATTLE_OF_THE_BANDS" && card.rarity == "COMMON" && s > 0){
-          int a = 5;
-
-        }
+      if (summary.expansions.containsKey(card.set)){      
         summary.incrementStandard(card, entry.qualities);
         int a = 5;
       }
       else{
+        var s = entry.qualities.entries
+          .where((x) => x.key == "regular")
+          .map((x) => x.value)
+          .sum;
+         if(card.rarity == "LEGENDARY" && s > 0 && card.normalCollectible){
+          var amount = summary.expansions['WILD']!.rarities['LEGENDARY']
+            !.qualities.entries
+            .where((x) => x.key == "regular")
+            .map((x) => x.value)
+            .sum;
+          print(card.name);
+          int a = 5;
+        }
         summary.incrementWild(card, entry.qualities);
         int a = 5;
       }
@@ -42,6 +46,7 @@ Future<Summary> fetchSummary() async {
   }
   int b = 4;
   subtractUncollectibleSignature(summary);
+  subtractUncollectibleSignatureInWild(summary);
   var res = jsonEncode(summary);
   return summary;
 }
@@ -89,10 +94,10 @@ class Expansion {
   Expansion(this.name, this.releaseYear, this.releaseMonth);
   
   final Map<String, Rarity> rarities = {
-    "COMMON": Rarity("COMMON", 0, 2),
-    "RARE": Rarity("RARE", 1, 5),
-    "EPIC": Rarity("EPIC", 5, 20),
-    "LEGENDARY": Rarity("LEGENDARY", 20, 80),
+    "COMMON": Rarity("Common", 0, 2),
+    "RARE": Rarity("Rare", 1, 5),
+    "EPIC": Rarity("Epic", 5, 20),
+    "LEGENDARY": Rarity("Legendary", 20, 80),
   };
 
   Expansion.fromJson(Map<String, dynamic> json)
@@ -180,5 +185,22 @@ void subtractUncollectibleSignature(Summary summary){
 
     var oldValue = summary.expansions[expansion]!.rarities[rarity]!.qualities['signature'];
     summary.expansions[expansion]!.rarities[rarity]!.qualities['signature'] = oldValue! - toSubtract;
+  }
+}
+
+void subtractUncollectibleSignatureInWild(Summary summary){
+  var toSubtracts = {
+    "COMMON.signature": 2,
+    "LEGENDARY.regular": 5,
+  };
+
+  for (var subtraction in toSubtracts.entries) {
+    var expansion = 'WILD';
+    var rarity = subtraction.key.split('.')[0];
+    var quality = subtraction.key.split('.')[1];
+    var toSubtract = subtraction.value;
+
+    var oldValue = summary.expansions[expansion]!.rarities[rarity]!.qualities[quality];
+    summary.expansions[expansion]!.rarities[rarity]!.qualities[quality] = oldValue! - toSubtract;
   }
 }
