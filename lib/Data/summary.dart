@@ -153,6 +153,7 @@ class Rarity {
 
 void subtractUncollectibleSignature(Summary summary){
   var toSubtracts = {
+    //always check if golden copy of card is collectible!
     "ISLAND_VACATION.COMMON": 4,
     "ISLAND_VACATION.RARE": 2,
     "ISLAND_VACATION.EPIC": 2,
@@ -161,9 +162,9 @@ void subtractUncollectibleSignature(Summary summary){
     "WHIZBANGS_WORKSHOP.RARE": 0,
     "WHIZBANGS_WORKSHOP.EPIC": 4,
 
-    "WILD_WEST.COMMON": 4,
+    "WILD_WEST.COMMON": 2,
     "WILD_WEST.RARE": 2,
-    "WILD_WEST.EPIC": 6,
+    "WILD_WEST.EPIC": 4,
 
     "TITANS.COMMON": 4,
     "TITANS.RARE": 4,
