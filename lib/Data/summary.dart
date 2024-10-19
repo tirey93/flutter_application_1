@@ -45,28 +45,39 @@ class Expansion {
 
   Expansion(this.name, this.releaseYear, this.releaseMonth);
   
-  final Map<String, Quality> rarities = {
-    "COMMON": Quality("COMMON"),
-    "RARE": Quality("RARE"),
-    "EPIC": Quality("EPIC"),
-    "LEGENDARY": Quality("LEGENDARY"),
+  final Map<String, Rarity> rarities = {
+    "COMMON": Rarity("COMMON", 0),
+    "RARE": Rarity("RARE", 1),
+    "EPIC": Rarity("EPIC", 5),
+    "LEGENDARY": Rarity("LEGENDARY", 20),
   };
 
 }
 
-class Quality {
-  final String rarity;
-  int regular = 0;
-  int golden = 0;
+class Rarity {
+    final String id;
+    final int cost;
 
-  Map<String, int> qualities = {
+    Map<String, int> qualities = {
     "regular": 0,
     "golden": 0,
     "diamond": 0,
     "signature": 0
   };
 
-  Quality(this.rarity);
-  
+  Rarity(this.id, this.cost);
   void increment(String quailty) => qualities[quailty] = qualities[quailty]! + 1;
+
+
 }
+
+// class Quality {
+//   final String rarity;
+//   int regular = 0;
+//   int golden = 0;
+
+  
+
+//   Quality(this.rarity);
+  
+// }
