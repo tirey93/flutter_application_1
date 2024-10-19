@@ -2,7 +2,7 @@
 import 'package:flutter_application_1/Data/card.dart';
 import 'package:flutter_application_1/Data/collection.dart';
 
-Future<List<Summary>> fetchSummary() async {
+Future<Summary> fetchSummary() async {
   var collectionFuture = fetchCollection();
   var cardsFuture = fetchCards();
   late CollectionData collection;
@@ -13,16 +13,22 @@ Future<List<Summary>> fetchSummary() async {
     cardsFuture.then((value) => cards = value)
   ]);
 
+  var summary = Summary();
   for (var entry in collection.collection) {
     var card = cards.cards[entry.cardId];
-    if (card != null && entry.cardId == '102149'){
+    if (card != null){
+      if (summary.expansions.containsKey(card.set)){
+        summary.increment(card.set, card.rarity, entry.qualities);
+        int a = 5;
+      }
+      else{
+        //wild case
+      }
       int a = 5;
     }
   }
   int b = 4;
-  return [
-    Summary()
-  ];
+  return summary;
 }
 
 class Summary {
@@ -33,6 +39,9 @@ class Summary {
     //...
     "WILD": Expansion("WILD", null, null),
    };
+
+   void increment(String expansion, String rarity, Map<String, int> qualities)
+    => expansions[expansion]!.rarities[rarity]!.increment(qualities);
 }
 
 //get expansion of the card based on card.set
@@ -46,17 +55,18 @@ class Expansion {
   Expansion(this.name, this.releaseYear, this.releaseMonth);
   
   final Map<String, Rarity> rarities = {
-    "COMMON": Rarity("COMMON", 0),
-    "RARE": Rarity("RARE", 1),
-    "EPIC": Rarity("EPIC", 5),
-    "LEGENDARY": Rarity("LEGENDARY", 20),
+    "COMMON": Rarity("COMMON", 0, 2),
+    "RARE": Rarity("RARE", 1, 5),
+    "EPIC": Rarity("EPIC", 5, 20),
+    "LEGENDARY": Rarity("LEGENDARY", 20, 80),
   };
 
 }
 
 class Rarity {
     final String id;
-    final int cost;
+    final int normalCost;
+    final int premiumCost;
 
     Map<String, int> qualities = {
     "regular": 0,
@@ -65,19 +75,13 @@ class Rarity {
     "signature": 0
   };
 
-  Rarity(this.id, this.cost);
-  void increment(String quailty) => qualities[quailty] = qualities[quailty]! + 1;
+  Rarity(this.id, this.normalCost, this.premiumCost);
 
-
+  void increment(Map<String, int> qualities){
+    for (var quality in qualities.entries) {
+      this.qualities[quality.key] = this.qualities[quality.key]! + quality.value;
+    }
+  }
+  int getNormalCost() => qualities['regular']! * normalCost;
+  int getPremiumCost() => (qualities['golden']! + qualities['signature']!) * premiumCost;
 }
-
-// class Quality {
-//   final String rarity;
-//   int regular = 0;
-//   int golden = 0;
-
-  
-
-//   Quality(this.rarity);
-  
-// }
