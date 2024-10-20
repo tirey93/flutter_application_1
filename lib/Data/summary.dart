@@ -1,7 +1,4 @@
 
-import 'dart:convert';
-
-import 'package:collection/collection.dart';
 import 'package:flutter_application_1/Data/card.dart';
 import 'package:flutter_application_1/Data/collection.dart';
 
@@ -22,32 +19,14 @@ Future<Summary> fetchSummary() async {
     if (card != null){
       if (summary.expansions.containsKey(card.set)){      
         summary.incrementStandard(card, entry.qualities);
-        int a = 5;
       }
       else{
-        var s = entry.qualities.entries
-          .where((x) => x.key == "regular")
-          .map((x) => x.value)
-          .sum;
-         if(card.rarity == "LEGENDARY" && s > 0 && card.normalCollectible){
-          var amount = summary.expansions['WILD']!.rarities['LEGENDARY']
-            !.qualities.entries
-            .where((x) => x.key == "regular")
-            .map((x) => x.value)
-            .sum;
-          print(card.name);
-          int a = 5;
-        }
         summary.incrementWild(card, entry.qualities);
-        int a = 5;
       }
-      int a = 5;
     }
   }
-  int b = 4;
   subtractUncollectibleSignature(summary);
-  subtractUncollectibleSignatureInWild(summary);
-  var res = jsonEncode(summary);
+  subtractUncollectibleInWild(summary);
   return summary;
 }
 
@@ -188,10 +167,11 @@ void subtractUncollectibleSignature(Summary summary){
   }
 }
 
-void subtractUncollectibleSignatureInWild(Summary summary){
+void subtractUncollectibleInWild(Summary summary){
   var toSubtracts = {
     "COMMON.signature": 2,
     "LEGENDARY.regular": 5,
+    "LEGENDARY.golden": 1,
   };
 
   for (var subtraction in toSubtracts.entries) {

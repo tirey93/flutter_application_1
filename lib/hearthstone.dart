@@ -1,9 +1,6 @@
 
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Data/card.dart';
-import 'package:flutter_application_1/Data/collection.dart';
 
 class HearthstonePage extends StatefulWidget {
   const HearthstonePage({super.key});
