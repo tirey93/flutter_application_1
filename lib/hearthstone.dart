@@ -1,6 +1,9 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Data/card.dart';
+import 'package:flutter_application_1/Data/summary.dart';
 
 class HearthstonePage extends StatefulWidget {
   const HearthstonePage({super.key});
@@ -10,18 +13,18 @@ class HearthstonePage extends StatefulWidget {
 }
 
 class _HearthstonePageState extends State<HearthstonePage> {
-  Future<CardsData>? futureCollection;
+  Future<Summary>? futureSummary;
 
   void _loadData() {
     setState(() {
-      futureCollection = fetchCards();
+      futureSummary = fetchSummary();
     });
   }
 
   @override
   void initState() {
     super.initState();
-    futureCollection = fetchCards();
+    futureSummary = fetchSummary();
   }
 
   @override
@@ -31,28 +34,20 @@ class _HearthstonePageState extends State<HearthstonePage> {
         title: const Text('This is hearthstone screen'),
       ),
       body: Center(
-        child: FutureBuilder<CardsData>(
-          future: futureCollection,
+        child: FutureBuilder<Summary>(
+          future: futureSummary,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator(); 
             }
             else if (snapshot.hasData) {
-               return ListView.builder(
-                itemCount: snapshot.data!.cards.length,
-                itemBuilder: (context, index) {
-                  var collection = snapshot.data!.cards;
-                  var entry = collection[index];
-
-                  // return ListTile(
-                  //   title: Text(
-                  //     entry.dbfId,
-                  //     style: Theme.of(context).textTheme.headlineSmall,
-                  //   ),
-                  //   subtitle: Text('${entry.set} ${entry.rarity} n:${entry.normalCollectible.toString()} g: ${entry.goldenCollectible.toString()}'),
-                  // );
-                },
-              );
+              // var res = jsonEncode(snapshot.data!);
+              JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+               String prettyprint = encoder.convert(snapshot.data!);
+               return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Text(prettyprint),
+               );
             } else if (snapshot.hasError) {
               return Text('${snapshot.error}');
             }

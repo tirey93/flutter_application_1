@@ -1,16 +1,11 @@
-// Copyright 2019 the Dart project authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE file.
-
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Data/summary.dart';
 import 'package:flutter_application_1/counter.dart';
 import 'package:flutter_application_1/hearthstone.dart';
 import 'package:flutter_application_1/http.dart';
 
 //flutter build apk --release 
-// void main() => runApp(const MyApp());
-void main() => fetchSummary();
+void main() => runApp(const MyApp());
+// void main() => fetchSummary();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
